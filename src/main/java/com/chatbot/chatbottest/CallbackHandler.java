@@ -26,6 +26,10 @@ public class CallbackHandler {
     public static final String GOOD_ACTION = "DEVELOPER_DEFINED_PAYLOAD_FOR_GOOD_ACTION";
     public static final String NOT_GOOD_ACTION = "DEVELOPER_DEFINED_PAYLOAD_FOR_NOT_GOOD_ACTION";
 
+    private String accessToken;
+    private String verifyToken;
+    private String appSecret;
+
     /**
      * Constructs the {@code CallBackHandler} and initializes the {@code MessengerReceiveClient}.
      *
@@ -38,6 +42,8 @@ public class CallbackHandler {
     public CallbackHandler(@Value("${messenger4j.appSecret}") final String appSecret,
                            @Value("${messenger4j.verifyToken}") final String verifyToken
     ) {
+        this.appSecret = appSecret;
+        this.verifyToken = verifyToken;
         logger.debug("Initializing MessengerReceiveClient - appSecret: {} | verifyToken: {}", appSecret, verifyToken);
     }
 
@@ -55,7 +61,7 @@ public class CallbackHandler {
         logger.debug("Received Webhook verification request - mode: {} | verifyToken: {} | challenge: {}", mode,
                 verifyToken, challenge);
 
-        Messenger messenger = Messenger.create("", "", "VERIFY_TOKEN");
+        Messenger messenger = Messenger.create("", appSecret, this.verifyToken);
 
         try {
             messenger.verifyWebhook(mode, verifyToken);
